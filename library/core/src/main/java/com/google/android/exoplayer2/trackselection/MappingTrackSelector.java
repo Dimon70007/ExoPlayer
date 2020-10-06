@@ -505,7 +505,7 @@ public abstract class MappingTrackSelector extends TrackSelector {
         int trackFormatSupportLevel =
             RendererCapabilities.getFormatSupport(
                 rendererCapability.supportsFormat(group.getFormat(trackIndex)));
-        formatSupportLevel = max(formatSupportLevel, trackFormatSupportLevel);
+        formatSupportLevel += trackFormatSupportLevel;
       }
       boolean rendererIsUnassociated = rendererTrackGroupCounts[rendererIndex] == 0;
       if (formatSupportLevel > bestFormatSupportLevel
