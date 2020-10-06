@@ -16,25 +16,51 @@
 
 LOCAL_PATH := $(call my-dir)
 
+MY_FFMPEG_PATH := $(LOCAL_PATH)/ffmpeg/android-libs/$(TARGET_ARCH_ABI)
+LOCAL_EXPORT_LDLIBS :=
+LOCAL_EXPORT_C_INCLUDES :=
 include $(CLEAR_VARS)
-LOCAL_MODULE    := libavcodec
-LOCAL_SRC_FILES := ffmpeg/android-libs/$(TARGET_ARCH_ABI)/$(LOCAL_MODULE).so
+MY_LIB_NAME := swresample
+LOCAL_MODULE := lib$(MY_LIB_NAME)
+LOCAL_SRC_FILES := $(MY_FFMPEG_PATH)/lib/$(LOCAL_MODULE).so
+LOCAL_EXPORT_C_INCLUDES := $(MY_FFMPEG_PATH)/include
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE    := libswresample
-LOCAL_SRC_FILES := ffmpeg/android-libs/$(TARGET_ARCH_ABI)/$(LOCAL_MODULE).so
+MY_LIB_NAME := avutil
+LOCAL_MODULE := lib$(MY_LIB_NAME)
+LOCAL_SRC_FILES := $(MY_FFMPEG_PATH)/lib/$(LOCAL_MODULE).so
+LOCAL_EXPORT_C_INCLUDES := $(MY_FFMPEG_PATH)/include
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE    := libavutil
-LOCAL_SRC_FILES := ffmpeg/android-libs/$(TARGET_ARCH_ABI)/$(LOCAL_MODULE).so
+MY_LIB_NAME := avcodec
+LOCAL_MODULE := lib$(MY_LIB_NAME)
+LOCAL_SRC_FILES := $(MY_FFMPEG_PATH)/lib/$(LOCAL_MODULE).so
+LOCAL_EXPORT_C_INCLUDES := $(MY_FFMPEG_PATH)/include
 include $(PREBUILT_SHARED_LIBRARY)
 
+# include $(CLEAR_VARS)
+# LOCAL_MODULE    := libavcodec
+# LOCAL_SRC_FILES := $(LOCAL_PATH)/ffmpeg/android-libs/$(TARGET_ARCH_ABI)/lib/$(LOCAL_MODULE).so
+# LOCAL_C_INCLUDES:= $(LOCAL_PATH)/ffmpeg/android-libs/$(TARGET_ARCH_ABI)/include
+# include $(PREBUILT_SHARED_LIBRARY)
+# 
+# include $(CLEAR_VARS)
+# LOCAL_MODULE    := libswresample
+# LOCAL_SRC_FILES := $(LOCAL_PATH)/ffmpeg/android-libs/$(TARGET_ARCH_ABI)/lib/$(LOCAL_MODULE).so
+# LOCAL_C_INCLUDES:= $(LOCAL_PATH)/ffmpeg/android-libs/$(TARGET_ARCH_ABI)/include
+# include $(PREBUILT_SHARED_LIBRARY)
+# 
+# include $(CLEAR_VARS)
+# LOCAL_MODULE    := libavutil
+# LOCAL_SRC_FILES := $(LOCAL_PATH)/ffmpeg/android-libs/$(TARGET_ARCH_ABI)/lib/$(LOCAL_MODULE).so
+# LOCAL_C_INCLUDES:= $(LOCAL_PATH)/ffmpeg/android-libs/$(TARGET_ARCH_ABI)/include
+# include $(PREBUILT_SHARED_LIBRARY)
+
 include $(CLEAR_VARS)
-LOCAL_MODULE := ffmpeg
+LOCAL_MODULE := ffmpeg_jni
 LOCAL_SRC_FILES := ffmpeg_jni.cc
-LOCAL_C_INCLUDES := ffmpeg
 LOCAL_SHARED_LIBRARIES := libavcodec libswresample libavutil
-LOCAL_LDLIBS := -Lffmpeg/android-libs/$(TARGET_ARCH_ABI) -llog -landroid
+LOCAL_LDLIBS := -llog -landroid
 include $(BUILD_SHARED_LIBRARY)

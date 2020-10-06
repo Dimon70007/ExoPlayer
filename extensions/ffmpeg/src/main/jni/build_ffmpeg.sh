@@ -18,11 +18,15 @@
 FFMPEG_EXT_PATH=$1
 NDK_PATH=$2
 HOST_PLATFORM=$3
-ENABLED_DECODERS=("${@:4}")
+FF_MAKE_FLAGS=$4
+ENABLED_DECODERS=("${@:5}")
+
+
 COMMON_OPTIONS="
     --target-os=android
     --disable-static
     --enable-shared
+    --enable-pic
     --disable-doc
     --disable-programs
     --disable-everything
@@ -41,9 +45,16 @@ for decoder in "${ENABLED_DECODERS[@]}"
 do
     COMMON_OPTIONS="${COMMON_OPTIONS} --enable-decoder=${decoder}"
 done
-cd "${FFMPEG_EXT_PATH}/jni/ffmpeg"
+
+echo "COMMON_OPTIONS \n ${COMMON_OPTIONS}"
+
+OUTPUT_DIR=${FFMPEG_EXT_PATH}/jni/ffmpeg/android-libs
+
+cd ${FFMPEG_EXT_PATH}/jni/ffmpeg
+
 ./configure \
-    --libdir=android-libs/armeabi-v7a \
+    --libdir=${OUTPUT_DIR}/armeabi-v7a/lib \
+    --incdir=${OUTPUT_DIR}/armeabi-v7a/include \
     --arch=arm \
     --cpu=armv7-a \
     --cross-prefix="${TOOLCHAIN_PREFIX}/armv7a-linux-androideabi16-" \
@@ -52,22 +63,24 @@ cd "${FFMPEG_EXT_PATH}/jni/ffmpeg"
     --extra-cflags="-march=armv7-a -mfloat-abi=softfp" \
     --extra-ldflags="-Wl,--fix-cortex-a8" \
     ${COMMON_OPTIONS}
-make -j4
-make install-libs
+make ${FF_MAKE_FLAGS}
+make install
 make clean
 ./configure \
-    --libdir=android-libs/arm64-v8a \
+    --libdir=${OUTPUT_DIR}/arm64-v8a/lib \
+    --incdir=${OUTPUT_DIR}/arm64-v8a/include \
     --arch=aarch64 \
     --cpu=armv8-a \
     --cross-prefix="${TOOLCHAIN_PREFIX}/aarch64-linux-android21-" \
     --nm="${TOOLCHAIN_PREFIX}/aarch64-linux-android-nm" \
     --strip="${TOOLCHAIN_PREFIX}/aarch64-linux-android-strip" \
     ${COMMON_OPTIONS}
-make -j4
-make install-libs
+make ${FF_MAKE_FLAGS}
+make install
 make clean
 ./configure \
-    --libdir=android-libs/x86 \
+    --libdir=${OUTPUT_DIR}/x86/lib \
+    --incdir=${OUTPUT_DIR}/x86/include \
     --arch=x86 \
     --cpu=i686 \
     --cross-prefix="${TOOLCHAIN_PREFIX}/i686-linux-android16-" \
@@ -75,11 +88,12 @@ make clean
     --strip="${TOOLCHAIN_PREFIX}/i686-linux-android-strip" \
     --disable-asm \
     ${COMMON_OPTIONS}
-make -j4
-make install-libs
+make ${FF_MAKE_FLAGS}
+make install
 make clean
 ./configure \
-    --libdir=android-libs/x86_64 \
+    --libdir=${OUTPUT_DIR}/x86_64/lib \
+    --incdir=${OUTPUT_DIR}/x86_64/include \
     --arch=x86_64 \
     --cpu=x86_64 \
     --cross-prefix="${TOOLCHAIN_PREFIX}/x86_64-linux-android21-" \
@@ -87,6 +101,6 @@ make clean
     --strip="${TOOLCHAIN_PREFIX}/x86_64-linux-android-strip" \
     --disable-asm \
     ${COMMON_OPTIONS}
-make -j4
-make install-libs
+make ${FF_MAKE_FLAGS}
+make install
 make clean
